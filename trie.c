@@ -1,6 +1,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+char hash:
+    void *get(hash *hash, char c)
+    void *add(hash *hash, char c, void *value)
+    void *data
+
+node:
+    void *value
+    char_hash ch
+
+empty_hash:
+    get = return null
+    add = create data, update get
+    data = null
+
+ab:
+    a:
+        get is null,
+        create node:
+            value = null
+            ch = empty hash
+        call add a on hash with node
+        hash = node.ch
+
+    b:
+        get is null
+        create node:
+            value = null
+            ch = empty hash
+        call add a on hash with node
+        hash = node.ch
+
+    \0:
+        set node.value to str_value
+*/
+
+
+
+
 struct trie {
     struct trie **arr_pbranches;
     void *value;
@@ -61,7 +100,10 @@ void test() {
     add_word(&t, "b2");
     add_word(&t, "b13");
     printf("%s\n", (char *) get_value(&t, "b2"));
+    printf("%s\n", (char *) get_value(&t, "b1"));
+    printf("%s\n", (char *) get_value(&t, "b13"));
     printf("%s\n", (char *) get_value(&t, "b"));
+    printf("%s\n", (char *) get_value(&t, ""));
 }
 
 int main(int argc, char **argv) {
