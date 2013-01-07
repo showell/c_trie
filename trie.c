@@ -122,13 +122,11 @@ void test_char_hash(
 struct trie {
     struct trie **arr_pbranches;
     void *value;
-    int cnt;
 };
 
 void trie_clear(struct trie *ptrie) {
     ptrie->arr_pbranches = NULL;
     ptrie->value = NULL;
-    ptrie->cnt = 0;
 }
 
 void add_word(
@@ -186,6 +184,6 @@ void test() {
 }
 
 int main(int argc, char **argv) {
-    test_char_hash();
+    test();
     return 0;
 }
