@@ -120,12 +120,12 @@ void test_char_hash(
 }
 
 struct trie {
-    struct trie **arr_pbranches;
+    struct char_hash ch;
     void *value;
 };
 
 void trie_clear(struct trie *ptrie) {
-    ptrie->arr_pbranches = NULL;
+    char_hash_init(&ptrie->ch);
     ptrie->value = NULL;
 }
 
@@ -136,15 +136,12 @@ void add_word(
     int i = 0;
     char c;
     while (c = word[i]) {
-        if (!ptrie->arr_pbranches) {
-            ptrie->arr_pbranches = malloc(256 * sizeof(struct trie *));
-        }
-        struct trie *pbranch = ptrie->arr_pbranches[c];
+        struct char_hash *pch = &(ptrie->ch);
+        struct trie *pbranch = (ptrie->ch.get)(pch, c);
         if (!pbranch) {
-            printf("make branch for %c\n", c);
             pbranch = malloc(sizeof(*pbranch));
             trie_clear(pbranch);
-            ptrie->arr_pbranches[c] = pbranch;
+            (ptrie->ch.put)(&(ptrie->ch), c, pbranch);
         }
         ptrie = pbranch;
         ++i;
@@ -159,8 +156,8 @@ void *get_value(
     int i = 0;
     char c;
     while (c = word[i]) {
-        if (!ptrie->arr_pbranches) return NULL;
-        struct trie *pbranch = ptrie->arr_pbranches[c];
+        struct char_hash *pch = &(ptrie->ch);
+        struct trie *pbranch = (ptrie->ch.get)(pch, c);
         if (!pbranch) return NULL;
         ptrie = pbranch;
         ++i;
