@@ -38,7 +38,86 @@ ab:
 */
 
 
+struct char_hash {
+    void *(*get)(struct char_hash *, char);
+    void (*put)(struct char_hash *, char, void *);
+    void *data;
+};
 
+struct char_entry {
+    char c;
+    void *value;
+};
+
+struct simple_hash {
+    int cnt;
+    struct char_entry *array;
+};
+
+void *char_hash_simple_get(
+    struct char_hash *pch,
+    char c
+) {
+    struct simple_hash *psh = pch->data;
+    int i;
+
+    for (i = 0; i < psh->cnt; ++i) {
+        if (psh->array[i].c == c) {
+            return psh->array[i].value;
+        }
+    }
+    return NULL;
+}
+
+void char_hash_simple_put(
+    struct char_hash *pch,
+    char c,
+    void *value
+) {
+    struct simple_hash *psh = pch->data;
+
+    psh->array[psh->cnt].c = c;
+    psh->array[psh->cnt].value = value;
+    ++psh->cnt;
+}
+
+void *char_hash_null_get(
+    struct char_hash *pch,
+    char c
+) {
+    return NULL;
+}
+
+void char_hash_null_put(
+    struct char_hash *pch,
+    char c,
+    void *value
+) {
+    pch->get = char_hash_simple_get;
+    pch->put = char_hash_simple_put;
+    struct simple_hash *psh = malloc(sizeof(*psh));
+    pch->data = psh;
+    psh->array = malloc(10 * sizeof(struct char_entry));
+    char_hash_simple_put(pch, c, value);
+}
+
+void char_hash_init(
+    struct char_hash *pch
+) {
+    pch->get = char_hash_null_get;
+    pch->put = char_hash_null_put;
+}
+    
+void test_char_hash(
+) {
+    struct char_hash ch;
+
+    char_hash_init(&ch);
+    (ch.put)(&ch, 'a', "alpha");
+    (ch.put)(&ch, 'b', "beta");
+    printf("%s\n", (char *)(ch.get)(&ch, 'a'));
+    printf("%s\n", (char *)(ch.get)(&ch, 'b'));
+}
 
 struct trie {
     struct trie **arr_pbranches;
@@ -107,6 +186,6 @@ void test() {
 }
 
 int main(int argc, char **argv) {
-    test();
+    test_char_hash();
     return 0;
 }
